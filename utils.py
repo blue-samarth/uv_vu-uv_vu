@@ -1,5 +1,7 @@
+from typing import List , Dict , Union
 import yfinance as yf
 import json
+from libs.assertions import assert_not_found , assert_not_none
 
 save_path : str = "stocks.json"
 
@@ -11,15 +13,29 @@ def get_stock_data(ticker : str) -> dict:
         ticker : str : The ticker of the stock to get data for
     
     Returns:
-        dict : The stock data
+        dict : Dictionary containing stock data metrics
     
     Raises:
         Exception : If the stock data could not be found
     """
     try:
         stock = yf.Ticker(ticker)
-        data = stock.info
-        return data
+        data = stock.history(period = "1d")
+        if data.empty:
+            raise assert_not_none("Data not found" , 404)
+        row = data.iloc[-1]
+        return {
+            "price" : row['Close'],
+            "high" : row['High'],
+            "low" : row['Low'],
+            "volume" : row['Volume'],
+            "open" : row['Open'],
+            "previous_close" : stock.info.get('previousClose', row['Close']),
+            "change" : row['Close'] - stock.info.get('previousClose', row['Close']),
+            "percent_change" : (row['Close'] - stock.info.get('previousClose', row['Close'])) / stock.info.get('previousClose', row['Close']) * 100,
+            "date_time" : row.name.strftime("%Y-%m-%d %H:%M:%S")
+
+        }
     except Exception as e:
         raise e
 
@@ -30,13 +46,32 @@ def add_stocklist(tickers : list) -> None:
 
     Args:
         tickers : list : The list of tickers to add
-    
-    Returns:
-    
     Raises:
+        Exception: If the file operation fails
     """
     try:
         with open(save_path , 'w') as file:
             json.dump(tickers , file)
-    except FileNotFoundError as e:
-        raise 
+    except FileNotFoundError:
+        raise assert_not_found("File not found" , 404)
+    except Exception as e:
+        raise e
+        
+
+def get_stocklist() -> list:
+    """
+    This function will get the list of tickers from the json file
+    
+    Returns:
+        list : The list of tickers
+    Raises:
+        Exception : If the file could not be found
+    """
+    try:
+        with open(save_path , 'r') as file:
+            data = json.load(file)
+            return data
+    except FileNotFoundError:
+        raise assert_not_found("File not found" , 404)
+    except Exception as e:
+        raise e

@@ -1,4 +1,5 @@
 from flask import Flask , render_template , request , redirect , url_for , flash
+from utils import add_stock , remove_stock , get_stock
 
 app : callable = Flask(__name__)
 app.secret_key : str = "mysecretkey"
