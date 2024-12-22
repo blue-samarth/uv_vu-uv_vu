@@ -6,10 +6,10 @@
 set -euo pipefail # Exit on error
 
 echo "🧪 Running tests with verbose output..."
-pytest -vvv -s tests/*.py
+uv run pytest -vvv -s tests/*.py
 
 echo "📊 Generating coverage report..."
-pytest --cov=core --cov-report=html tests/*.py
+uv run pytest --cov=libs --cov-report=html tests/*.py
 
 echo "🌐 Opening coverage report..."
 if command -v xdg-open &> /dev/null; then
