@@ -24,20 +24,25 @@ Transform your investment monitoring in minutes:
 # Install UV - The Next-Gen Package Manager
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# Clone and Enter
+# Clone and Enter Project
 git clone <repository-url>
-cd stock-tracker
+cd uv_vu-uv_vu
 
-# Create Virtual Environment
-uv venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-
-# Install Dependencies
-uv pip install -r requirements.txt
-
-# Launch
-python app.py
+# Run the Application
+uv run python3 app.py
 ```
+
+That's it! UV will automatically handle all dependencies defined in pyproject.toml. Visit `http://localhost:5000` to start tracking stocks.
+
+## 📦 Dependencies
+
+All project dependencies are automatically managed through UV using our pyproject.toml configuration. This ensures consistent environments and eliminates manual dependency installation. Key packages include:
+
+- Flask: Web application framework
+- yfinance: Real-time market data integration
+- Type hints: Built-in Python typing support
+
+[Rest of the README remains the same...]
 
 ## 🏗️ Architecture
 
