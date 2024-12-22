@@ -1,5 +1,6 @@
+from typing import Dict
 from flask import Flask , render_template , request , redirect , url_for , flash
-from utils import add_stock , remove_stock , get_stock
+from utils import add_stocklist , get_stocklist , get_stock_data
 
 app : callable = Flask(__name__)
 app.secret_key : str = "mysecretkey"
@@ -15,9 +16,29 @@ def index():
 
     Raises:
 
-
     """
-    return render_template('index.html')
+    tickers : list = get_stocklist()
+    if request.method == 'POST':
+        ticker : str = request.form.get('ticker').upper().strip()
+        if not ticker: flash("Please enter a ticker" , "error")
+        else:
+            data : Dict = get_stock_data(ticker)
+            if data:
+                if data not in tickers:
+                    tickers.append(data)
+                    add_stocklist(tickers)
+                    flash(f"Stock : {ticker} added successfully" , "success")
+                else:
+                    flash(f"Stock : {ticker} already exists" , "info")
+            else:
+                flash(f"Stock : {ticker} not found" , "error")
+        return redirect(url_for('index'))
+    
+    else:
+        stock_list : list = []
+        for ticker in tickers:
+            stock_list.append(get_stock_data(ticker))
+        return render_template('index.html' , stock_list = stock_list)
 
 @app.route('/remove/<ticker> : str')
 def remove(ticker : str):
