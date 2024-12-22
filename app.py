@@ -1,6 +1,6 @@
 from typing import Dict
 from flask import Flask , render_template , request , redirect , url_for , flash
-from utils import add_stocklist , get_stocklist , get_stock_data
+from utils import save_stocklist , get_stocklist , get_stock_data
 
 app : callable = Flask(__name__)
 app.secret_key : str = "mysecretkey"
@@ -26,7 +26,7 @@ def index():
             if data:
                 if data not in tickers:
                     tickers.append(data)
-                    add_stocklist(tickers)
+                    save_stocklist(tickers)
                     flash(f"Stock : {ticker} added successfully" , "success")
                 else:
                     flash(f"Stock : {ticker} already exists" , "info")
@@ -45,17 +45,21 @@ def remove(ticker : str):
     """
     This function will remove a stock from the json file
     This function will redirect to the main page
-
     Args:
         ticker : str : The ticker of the stock to remove
     
     Returns:
 
     Raises:
-
-
     """
-    pass
+    tickers : list = get_stocklist()
+    if ticker in tickers:
+        tickers.remove(ticker)
+        save_stocklist(tickers)
+        flash(f"Stock : {ticker} removed successfully" , "success")
+    else:
+        flash(f"Stock : {ticker} not found" , "error")
+    return redirect(url_for('index'))
 
 
 if __name__ == '__main__':

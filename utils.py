@@ -40,7 +40,7 @@ def get_stock_data(ticker : str) -> dict:
         raise e
 
 
-def add_stocklist(tickers : list) -> None:
+def save_stocklist(tickers : list) -> None:
     """
     This function will add a list of tickers to the json file
 
