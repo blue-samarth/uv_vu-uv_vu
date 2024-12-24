@@ -20,12 +20,12 @@ def get_stock_data(ticker : str) -> dict:
     """
     try:
         stock = yf.Ticker(ticker)
-        print(stock)
         data = stock.history(period = "1d")
         if data.empty:
             raise assert_not_none("Data not found" , 404)
         row = data.iloc[-1]
         return {
+            "ticker" : ticker,
             "price" : row['Close'],
             "high" : row['High'],
             "low" : row['Low'],
@@ -73,7 +73,7 @@ def get_stocklist() -> list:
     """
     try:
         with open(save_path , 'r') as file:
-            data = json.load(file)
+            data : List  = json.load(file)
             return data
     except FileNotFoundError:
         raise assert_not_found("File not found" , 404)
