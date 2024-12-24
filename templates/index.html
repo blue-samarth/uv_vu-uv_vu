@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Management</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Stock Management</h1>
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div>
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
+
+        <!-- Form to add a new stock -->
+        <form method="POST" action="/">
+            <div class="mb-3">
+                <label for="ticker" class="form-label">Add a new stock (Ticker Symbol):</label>
+                <input type="text" id="ticker" name="ticker" class="form-control" placeholder="Enter ticker symbol">
+            </div>
+            <button type="submit" class="btn btn-primary">Add Stock</button>
+        </form>
+
+        <!-- List of stocks -->
+        <h2 class="mt-5">Stock List</h2>
+        {% if stock_list %}
+            <ul class="list-group">
+                {% for stock in stock_list %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ stock['ticker'] }}</strong>: {{ stock['name'] }}
+                        </div>
+                        <a href="/remove/{{ stock['ticker'] }}" class="btn btn-danger btn-sm">Remove</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No stocks added yet. Use the form above to add one.</p>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,9 +1,19 @@
 from typing import Dict
 from flask import Flask , render_template , request , redirect , url_for , flash
-from utils import save_stocklist , get_stocklist , get_stock_data
+from utils import save_stocklist , get_stocklist , get_stock_data , save_path
 
 app : callable = Flask(__name__)
 app.secret_key : str = "mysecretkey"
+
+# we will check if save_path exists if not we will create it
+try:
+    with open(save_path , 'r') as file:
+        pass
+except FileNotFoundError:
+    with open(save_path , 'w') as file:
+        file.write("[]")
+except Exception as e:
+    raise e
 
 @app.route('/' , methods = ['GET' , 'POST'])
 def index():
