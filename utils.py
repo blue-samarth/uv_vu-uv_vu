@@ -21,8 +21,8 @@ def get_stock_data(ticker : str) -> dict:
     try:
         stock = yf.Ticker(ticker)
         data = stock.history(period = "1d")
-        if data.empty:
-            raise assert_not_none("Data not found" , 404)
+        assert_not_none(data ,"Data not found" , 404)
+            # return None
         row = data.iloc[-1]
         return {
             "ticker" : ticker,

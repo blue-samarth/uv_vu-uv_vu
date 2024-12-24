@@ -1,6 +1,7 @@
 from typing import Dict
 from flask import Flask , render_template , request , redirect , url_for , flash
 from utils import save_stocklist , get_stocklist , get_stock_data , save_path
+from libs.exceptions import CustomError
 
 app : callable = Flask(__name__)
 app.secret_key : str = "mysecretkey"
@@ -32,7 +33,11 @@ def index():
         ticker_name : str = request.form.get('ticker').upper().strip()
         if not ticker_name: flash("Please enter a ticker" , "error")
         else:
-            data : Dict = get_stock_data(ticker_name)
+            try:
+                data : Dict = get_stock_data(ticker_name)
+            except CustomError as e:
+                flash(f"Stock : {ticker_name} not found" , "error")
+                return redirect(url_for('index'))
             if data:
                 if data not in tickers:
                     tickers.append(data)
@@ -40,8 +45,6 @@ def index():
                     flash(f"Stock : {ticker_name} added successfully" , "success")
                 else:
                     flash(f"Stock : {ticker_name} already exists" , "info")
-            else:
-                flash(f"Stock : {ticker_name} not found" , "error")
         return redirect(url_for('index'))
     
     else:
