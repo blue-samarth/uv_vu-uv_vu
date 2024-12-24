@@ -33,21 +33,47 @@
         </form>
 
         <!-- Stock List -->
-        <h2 class="mt-5">Stock List</h2>
-        {% if stock_list %}
-            <ul class="list-group">
-                {% for stock in stock_list %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>{{ stock['ticker'] }}</strong> - Price: {{ stock['price'] }} | High: {{ stock['high'] }} | Low: {{ stock['low'] }} | Volume: {{ stock['volume'] }} | Open: {{ stock['open'] }} | Previous Close: {{ stock['previous_close'] }} | Change: {{ stock['change'] }} | Percent Change: {{ stock['percent_change'] }}% | Date: {{ stock['date_time'] }}
-                        </div>
-                        <a href="/remove/{{ stock['ticker'] }}" class="btn btn-danger btn-sm">Remove</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No stocks added yet. Use the form above to add one.</p>
-        {% endif %}
+        <div>
+            <h2>Stock List</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ticker</th>
+                        <th>Price</th>
+                        <th>High</th>
+                        <th>Low</th>
+                        <th>Volume</th>
+                        <th>Open</th>
+                        <th>Previous Close</th>
+                        <th>Change</th>
+                        <th>Percent Change</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if stock_list %}
+                        {% for stock in stock_list %}
+                            <tr>
+                                <td>{{ stock['ticker'] }}</td>
+                                <td>{{ stock['price'] }}</td>
+                                <td>{{ stock['high'] }}</td>
+                                <td>{{ stock['low'] }}</td>
+                                <td>{{ stock['volume'] }}</td>
+                                <td>{{ stock['open'] }}</td>
+                                <td>{{ stock['previous_close'] }}</td>
+                                <td>{{ stock['change'] }}</td>
+                                <td>{{ stock['percent_change'] }}%</td>
+                                <td>{{ stock['date_time'] }}</td>
+                                <td><a href="{{ url_for('remove', ticker=stock.ticker) }}" class="btn btn-danger btn-sm">Remove</a></td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr><td colspan="11">No stocks added yet. Use the form above to add one.</td></tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

@@ -11,3 +11,10 @@ wheels/
 
 # the files created by setup
 stocks.json
+
+# the files created by the tests
+htmlcov/
+.coverage
+.coverage.*
+.cache
+

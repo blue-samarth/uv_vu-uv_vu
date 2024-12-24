@@ -29,25 +29,25 @@ def index():
     """
     tickers : list = get_stocklist()
     if request.method == 'POST':
-        ticker : str = request.form.get('ticker').strip()
-        if not ticker: flash("Please enter a ticker" , "error")
+        ticker_name : str = request.form.get('ticker').upper().strip()
+        if not ticker_name: flash("Please enter a ticker" , "error")
         else:
-            data : Dict = get_stock_data(ticker)
+            data : Dict = get_stock_data(ticker_name)
             if data:
                 if data not in tickers:
                     tickers.append(data)
                     save_stocklist(tickers)
-                    flash(f"Stock : {ticker} added successfully" , "success")
+                    flash(f"Stock : {ticker_name} added successfully" , "success")
                 else:
-                    flash(f"Stock : {ticker} already exists" , "info")
+                    flash(f"Stock : {ticker_name} already exists" , "info")
             else:
-                flash(f"Stock : {ticker} not found" , "error")
+                flash(f"Stock : {ticker_name} not found" , "error")
         return redirect(url_for('index'))
     
     else:
         stock_list : list = []
         for ticker in tickers:
-            stock_list.append(get_stock_data(ticker))
+            stock_list.append(get_stock_data(ticker['ticker']))
         return render_template('index.html' , stock_list = stock_list)
 
 @app.route('/remove/<ticker> : str')
@@ -63,10 +63,11 @@ def remove(ticker : str):
     Raises:
     """
     tickers : list = get_stocklist()
-    if ticker in tickers:
-        tickers.remove(ticker)
+    if any(ticker == stock['ticker'] for stock in tickers):
+        tickers = [stock for stock in tickers if stock['ticker'] != ticker]
         save_stocklist(tickers)
         flash(f"Stock : {ticker} removed successfully" , "success")
+        return redirect(url_for('index'))
     else:
         flash(f"Stock : {ticker} not found" , "error")
     return redirect(url_for('index'))
