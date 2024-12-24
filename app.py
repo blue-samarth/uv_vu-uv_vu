@@ -29,7 +29,7 @@ def index():
     """
     tickers : list = get_stocklist()
     if request.method == 'POST':
-        ticker : str = request.form.get('ticker').upper().strip()
+        ticker : str = request.form.get('ticker').strip()
         if not ticker: flash("Please enter a ticker" , "error")
         else:
             data : Dict = get_stock_data(ticker)

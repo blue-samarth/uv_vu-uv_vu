@@ -8,3 +8,6 @@ wheels/
 
 # Virtual environments
 .venv
+
+# the files created by setup
+stocks.json

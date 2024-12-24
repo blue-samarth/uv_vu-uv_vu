@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Management</title>
+    <title>Stock Management Application</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
     <div class="container mt-5">
-        <h1 class="mb-4">Stock Management</h1>
+        <h1 class="mb-4">Stock Management Application</h1>
 
-        <!-- Flash messages -->
+        <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             <div>
@@ -23,23 +23,23 @@
         {% endif %}
         {% endwith %}
 
-        <!-- Form to add a new stock -->
+        <!-- Add Stock Form -->
         <form method="POST" action="/">
             <div class="mb-3">
-                <label for="ticker" class="form-label">Add a new stock (Ticker Symbol):</label>
+                <label for="ticker" class="form-label">Add a New Stock (Ticker Symbol):</label>
                 <input type="text" id="ticker" name="ticker" class="form-control" placeholder="Enter ticker symbol">
             </div>
             <button type="submit" class="btn btn-primary">Add Stock</button>
         </form>
 
-        <!-- List of stocks -->
+        <!-- Stock List -->
         <h2 class="mt-5">Stock List</h2>
         {% if stock_list %}
             <ul class="list-group">
                 {% for stock in stock_list %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <div>
-                            <strong>{{ stock['ticker'] }}</strong>: {{ stock['name'] }}
+                            <strong>{{ stock['ticker'] }}</strong> - Price: {{ stock['price'] }} | High: {{ stock['high'] }} | Low: {{ stock['low'] }} | Volume: {{ stock['volume'] }} | Open: {{ stock['open'] }} | Previous Close: {{ stock['previous_close'] }} | Change: {{ stock['change'] }} | Percent Change: {{ stock['percent_change'] }}% | Date: {{ stock['date_time'] }}
                         </div>
                         <a href="/remove/{{ stock['ticker'] }}" class="btn btn-danger btn-sm">Remove</a>
                     </li>

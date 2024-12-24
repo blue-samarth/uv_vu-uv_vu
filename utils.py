@@ -20,6 +20,7 @@ def get_stock_data(ticker : str) -> dict:
     """
     try:
         stock = yf.Ticker(ticker)
+        print(stock)
         data = stock.history(period = "1d")
         if data.empty:
             raise assert_not_none("Data not found" , 404)
@@ -36,6 +37,9 @@ def get_stock_data(ticker : str) -> dict:
             "date_time" : row.name.strftime("%Y-%m-%d %H:%M:%S")
 
         }
+    except AssertionError as e:
+        raise e
+
     except Exception as e:
         raise e
 
