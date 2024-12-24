@@ -18,3 +18,5 @@ htmlcov/
 .coverage.*
 .cache
 
+# lock files
+uv.lock
