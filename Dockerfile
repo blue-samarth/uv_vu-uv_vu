@@ -10,7 +10,7 @@ RUN <<EOT
         build-essential \
         ca-certificates \
         python3-setuptools \
-        python3.12-dev \
+        python3.12-dev &&
     apt-get clean && rm -rf /var/lib/apt/lists/*
 EOT
 
@@ -36,6 +36,9 @@ ENV UV_LINK_MODE=copy \
 
 COPY pyproject.toml /_lock
 COPY uv.lock /_lock
+
+RUN ls -la /_lock
+
 
 RUN --mount=type=cache,target=/root/.cache <<EOT
     uv sync \
