@@ -76,6 +76,6 @@ def remove(ticker : str):
     return redirect(url_for('index'))
 
 
-if __name__ == '__main__':
-    # This part would typically be managed by Gunicorn or another WSGI server in production
-    app.run(host='0.0.0.0', port=5000)
+# if __name__ == '__main__':
+#     # This part would typically be managed by Gunicorn or another WSGI server in production
+#     app.run(host='0.0.0.0', port=5000)
