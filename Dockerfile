@@ -2,24 +2,19 @@
 #syntax=docker/dockerfile:1.9 
 
 FROM ubuntu:noble AS prebuild
-
 SHELL [ "/bin/bash" , "-exc" ] 
-#set shell to bash
 
 RUN <<EOT
-    apt-get update
-    apt-get install -y \
+    apt-get update && apt-get install -y \
         -o APT::Install-Recommends=false -o APT::Install-Suggests=false \
         build-essential \
         ca-certificates \
         python3-setuptools \
         python3.12-dev \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 EOT
 
-# The above command will install the necessary packages for building the python package like setuptools, python3.12-dev, etc. and also the build-essential package which is required for building the python package.
-
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv 
-
 # The above command will copy the uv binary from the uv image to the /usr/local/bin/uv path in the base image.
 
 ENV UV_LINK_MODE=copy \ 
@@ -81,29 +76,21 @@ EOT
 
 # we create a new user and group called app with the home directory /app.
 # The user app will be the owner of the /app directory.
-# groupadd -r app: This will create a system group called app.
-# useradd -r -d /app -g app -N app: This will create a system user called app with the home directory /app and the group app.
-
-
 # ENTRYPOINT ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
 #this is a flask app so we don't necessarily need to specify the command to run the app as it will be done by the flask app itself. so this is a placeholder
-
 # STOPSIGNAL SIGINT
 # we set the stop signal to SIGINT. This will send an interrupt signal to the container when it is stopped. basically, it will stop the container gracefully.
 # SIGINT: This is the interrupt signal. This signal is sent when you press Ctrl+C in the terminal.
 # also we don't need to specify the command to run the app as it will be done by the flask app itself. so this is a placeholder
 
 RUN <<EOT
-    apt-get update -qy
-    apt-get install -qyy \
+    apt-get update -qy && apt-get install -qy \
         -o APT::Install-Recommends=false -o APT::Install-Suggests=false \
         python3.12 \
         libpython3.12 \
-        libprce3 \
-        libxml12
-    
-    apt-get clean
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+        libpcre3 \
+        libxml2
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 EOT
 
 
