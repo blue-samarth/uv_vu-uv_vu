@@ -34,11 +34,12 @@ ENV UV_LINK_MODE=copy \
 
 ### End build prep -- this is where your app Dockerfile should start.
 
-COPY pyproject.toml /_lock
-COPY uv.lock /_lock
+RUN mkdir -p /_lock
+COPY pyproject.toml /_lock/
+COPY uv.lock /_lock/
 
-RUN ls -la /_lock
 
+WORKDIR /_lock
 
 RUN --mount=type=cache,target=/root/.cache <<EOT
     uv sync \
@@ -54,6 +55,10 @@ EOT
 # --no-install-project: This will prevent uv from installing the project dependencies.
 
 COPY . /src
+# Ensure the virtual environment is created before installing dependencies
+RUN --mount=type=cache,target=/root/.cache \
+    uv venv --python=${UV_PYTHON} ${UV_PYTHON_ENVIRONMENT}
+
 RUN --mount=type=cache,target=/root/.cache \
     uv pip install \
     --python=${UV_PYTHON_ENVIRONMENT} \
