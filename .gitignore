@@ -21,3 +21,4 @@ htmlcov/
 # lock files
 uv.lock
 for_my_help.txt
+requirements.txt

@@ -6,7 +6,10 @@ SHELL [ "/bin/bash" , "-exc" ]
 RUN <<EOT
     apt-get update && apt-get install -y \
         -o APT::Install-Recommends=false -o APT::Install-Suggests=false \
-        python3.12-minimal &&
+        build-essential \
+        ca-certificates \
+        python3-setuptools \
+        python3.12-dev &&
     apt-get clean && rm -rf /var/lib/apt/lists/*
 EOT
 
@@ -16,41 +19,34 @@ ENV UV_LINK_MODE=copy \
     UV_COMPILE_BYTECODE=1 \
     UV_PYTHON_DOWNLOADS=never \
     UV_PYTHON=python3.12 \
-    UV_PYTHON_ENVIRONMENT=/app \
-    UV_NO_BINARY=:all: \
-    UV_INDEX_URL=https://pypi.org/simple \
-    UV_WHEELS_ONLY=1
+    UV_PYTHON_ENVIRONMENT=/app
 
-WORKDIR /app
+RUN mkdir -p /_lock
+COPY pyproject.toml uv.lock /_lock/
+WORKDIR /_lock
 
-# Copy only dependency files first
-COPY pyproject.toml uv.lock ./
+RUN --mount=type=cache,target=/root/.cache <<EOT
+    uv sync \
+        --locked \
+        --no-dev \
+        --no-install-project 
+EOT
 
-# Pre-download wheels using UV's wheel-only mode
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv pip sync uv.lock --wheel-only 
-
-# Install from pre-downloaded wheels
-RUN --mount=type=cache,target=/root/.cache/uv \
+COPY . /src
+RUN --mount=type=cache,target=/root/.cache \
     uv pip install \
-        --find-links=/wheels \
-        --no-index \
+        --python=${UV_PYTHON} \
         --no-deps \
-        -r uv.lock
+        /src
 
-# Copy and install application
-COPY . .
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv pip install \
-        --no-deps \
-        .
-
-FROM gcr.io/distroless/python3:nonroot AS runtime
+FROM ubuntu:noble AS runtime
+SHELL [ "/bin/bash" , "-exc" ]
 
 COPY --from=builder /usr/local/bin/uv /usr/local/bin/uv
-COPY --from=builder /app /app
 
-USER nonroot
+COPY . /app
+ENV PATH=/app/bin:$PATH
+
 WORKDIR /app
 
 EXPOSE 5000
