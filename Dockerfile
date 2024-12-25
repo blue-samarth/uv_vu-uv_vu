@@ -1,7 +1,7 @@
 
 #syntax=docker/dockerfile:1.9 
 
-FROM ubuntu:noble AS pre-build
+FROM ubuntu:noble AS prebuild
 
 SHELL [ "/bin/bash" , "-exc" ] 
 #set shell to bash
@@ -85,10 +85,10 @@ EOT
 # useradd -r -d /app -g app -N app: This will create a system user called app with the home directory /app and the group app.
 
 
-ENTRYPOINT [ "python3" , "app.py" ] 
+# ENTRYPOINT ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
 #this is a flask app so we don't necessarily need to specify the command to run the app as it will be done by the flask app itself. so this is a placeholder
 
-STOPSIGNAL SIGINT
+# STOPSIGNAL SIGINT
 # we set the stop signal to SIGINT. This will send an interrupt signal to the container when it is stopped. basically, it will stop the container gracefully.
 # SIGINT: This is the interrupt signal. This signal is sent when you press Ctrl+C in the terminal.
 # also we don't need to specify the command to run the app as it will be done by the flask app itself. so this is a placeholder
@@ -105,3 +105,20 @@ RUN <<EOT
     apt-get clean
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 EOT
+
+
+FROM ubuntu:noble as runtime
+SHELL [ "/bin/bash" , "-exc" ]
+
+COPY --from=build /app /app
+COPY --from=build /etc/passwd /etc/passwd
+COPY --from=build /etc/group /etc/group
+
+
+USER app
+WORKDIR /app
+
+EXPOSE 5000
+
+# Set the entry point for the Flask app
+ENTRYPOINT ["gunicorn", "-b", "0.0.0.0:5000", "--workers=2", "--threads=4", "app:app"]
