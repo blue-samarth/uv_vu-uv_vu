@@ -64,15 +64,16 @@ RUN --mount=type=cache,target=/root/.cache \
 # --no-deps: This will prevent uv from installing the dependencies.
 
 
-FROM ubuntu:noble as build
+FROM ubuntu:noble AS build
 SHELL [ "/bin/bash" , "-exc" ] 
 
 ENV PATH=/app/bin:$PATH
 
-RUN <<EOT
-    groupadd -r app
-    useradd -r -d /app -g app -N app
+RUN <<EOT 
+    groupadd -r app || true \
+    useradd -r -d /app -g app -N app || true
 EOT
+
 
 # we create a new user and group called app with the home directory /app.
 # The user app will be the owner of the /app directory.
@@ -93,8 +94,10 @@ RUN <<EOT
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 EOT
 
+COPY --from=prebuild /app /app
+COPY . /app
 
-FROM ubuntu:noble as runtime
+FROM ubuntu:noble AS runtime
 SHELL [ "/bin/bash" , "-exc" ]
 
 COPY --from=build /app /app
