@@ -1,9 +1,10 @@
 
 #syntax=docker/dockerfile:1.9 
 
-FROM ubuntu:noble AS build
+FROM ubuntu:noble AS pre-build
 
-SHELL [ "/bin/bash" , "-exc" ] # set shell to bash
+SHELL [ "/bin/bash" , "-exc" ] 
+#set shell to bash
 
 RUN <<EOT
     apt-get update
@@ -61,3 +62,46 @@ RUN --mount=type=cache,target=/root/.cache \
     --no-deps \
     /src
 
+# The above command will install the project dependencies using the uv binary without installing the dependencies
+# `/src` will not be copied to the runtime image, only the installed dependencies will be copied.
+# As of uv 0.4.11, you can also use `cd /src && uv sync --locked --no-dev --no-editable` instead.
+# --python=${UV_PYTHON_ENVIRONMENT}: This will set the python environment path to /app.
+# --no-deps: This will prevent uv from installing the dependencies.
+
+
+FROM ubuntu:noble as build
+SHELL [ "/bin/bash" , "-exc" ] 
+
+ENV PATH=/app/bin:$PATH
+
+RUN <<EOT
+    groupadd -r app
+    useradd -r -d /app -g app -N app
+EOT
+
+# we create a new user and group called app with the home directory /app.
+# The user app will be the owner of the /app directory.
+# groupadd -r app: This will create a system group called app.
+# useradd -r -d /app -g app -N app: This will create a system user called app with the home directory /app and the group app.
+
+
+ENTRYPOINT [ "python3" , "app.py" ] 
+#this is a flask app so we don't necessarily need to specify the command to run the app as it will be done by the flask app itself. so this is a placeholder
+
+STOPSIGNAL SIGINT
+# we set the stop signal to SIGINT. This will send an interrupt signal to the container when it is stopped. basically, it will stop the container gracefully.
+# SIGINT: This is the interrupt signal. This signal is sent when you press Ctrl+C in the terminal.
+# also we don't need to specify the command to run the app as it will be done by the flask app itself. so this is a placeholder
+
+RUN <<EOT
+    apt-get update -qy
+    apt-get install -qyy \
+        -o APT::Install-Recommends=false -o APT::Install-Suggests=false \
+        python3.12 \
+        libpython3.12 \
+        libprce3 \
+        libxml12
+    
+    apt-get clean
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+EOT
