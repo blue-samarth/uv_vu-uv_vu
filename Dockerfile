@@ -77,10 +77,11 @@ SHELL [ "/bin/bash" , "-exc" ]
 
 ENV PATH=/app/bin:$PATH
 
-RUN <<EOT 
-    groupadd -r app || true \
-    useradd -r -d /app -g app -N app || true
-EOT
+# RUN <<EOT 
+#     groupadd -r app || true \
+#     useradd -r -d /app -g app -N app || true
+# EOT
+RUN groupadd -r app && useradd -r -d /app -g app -N app && cat /etc/passwd
 
 
 # we create a new user and group called app with the home directory /app.
