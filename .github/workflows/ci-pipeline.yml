@@ -1,0 +1,97 @@
+name : CI Pipeline for my project
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+    pre-build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Set up Python 3.12
+              uses: actions/checkout@v2
+
+            - name: Install Python 3.12
+              uses: actions/setup-python@v4
+              with:
+                  python-version: 3.12
+
+            - name: Install uv
+              run: |
+                curl -fsSL https://install.astral.sh/uv/install.sh | sh 
+                echo '$HOME/.local/bin' >> $GITHUB_PATH
+              
+            - name: Cache UV dependencies
+              uses: actions/cache@v3
+              with:
+                path: |
+                    ~/.cache/uv
+                    ~/.cargo/bin/uv
+                key: ${{ runner.os }}-uv-${{ hashFiles('**/uv.lock') }}
+                restore-keys: |
+                    ${{ runner.os }}-uv-
+    
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Set up Python 3.12
+              uses: actions/checkout@v2
+
+            - name: Install Python 3.12
+              uses: actions/setup-python@v4
+              with:
+                  python-version: 3.12
+
+            - name: Install uv
+              run: |
+                curl -fsSL https://install.astral.sh/uv/install.sh | sh 
+                echo '$HOME/.local/bin' >> $GITHUB_PATH
+              
+            - name: Cache UV dependencies
+              uses: actions/cache@v3
+              with:
+                path: |
+                    ~/.cache/uv
+                    ~/.cargo/bin/uv
+                key: ${{ runner.os }}-uv-${{ hashFiles('**/uv.lock') }}
+                restore-keys: |
+                    ${{ runner.os }}-uv-
+            - name: Install dependencies
+              run: |
+                uv pip install --generate-lock-file
+
+
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Set up Python 3.12
+              uses: actions/checkout@v2
+
+            - name: Install Python 3.12
+              uses: actions/setup-python@v4
+              with:
+                  python-version: 3.12
+
+            - name: Install uv
+              run: |
+                curl -fsSL https://install.astral.sh/uv/install.sh | sh 
+                echo '$HOME/.local/bin' >> $GITHUB_PATH
+              
+            - name: Cache UV dependencies
+              uses: actions/cache@v3
+              with:
+                path: |
+                    ~/.cache/uv
+                    ~/.cargo/bin/uv
+                key: ${{ runner.os }}-uv-${{ hashFiles('**/uv.lock') }}
+                restore-keys: |
+                    ${{ runner.os }}-uv-
+            - name: Install dependencies
+              run: |
+                uv pip install --generate-lock-file
+
+            - name: Run tests
+              run: |
+                uv run pytest -vvv -s tests/*.py
