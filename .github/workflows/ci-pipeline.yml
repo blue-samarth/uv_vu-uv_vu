@@ -31,7 +31,7 @@ jobs:
           path: |
             ~/.cache/uv
             ~/.cargo/bin/uv
-          key: ${{ runner.os }}-uv-${{ hashFiles('**/uv.lock') }}
+          key: ${{ runner.os }}-uv-${{ hashFiles('uv.lock') }}
           restore-keys: |
             ${{ runner.os }}-uv-
 
