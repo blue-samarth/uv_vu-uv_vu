@@ -42,7 +42,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv pip install --no-index --find-links ~/.cache/uv --no-compile
+          uv sync
 
   build:
     needs: setup
