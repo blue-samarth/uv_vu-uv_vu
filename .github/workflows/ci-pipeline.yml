@@ -22,9 +22,14 @@ jobs:
 
       - name: Install uv
         run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh 
+          curl -LsSf https://astral.sh/uv/install.sh | sh
           echo "$HOME/.local/bin" >> $GITHUB_PATH
-          export PATH=$HOME/.local/bin:$PATH
+          echo "export PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
+  
+      - name: Verify uv Installation
+        run: |
+          echo "Checking uv version:"
+          uv --version
       
 
       - name: Debug Cache Key
@@ -53,19 +58,15 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Restore UV binary
-        uses: actions/cache@v3
-        with:
-          path: $HOME/.local/bin
-          key: uv-${{ runner.os }}
-      
-      - name: Update PATH
-        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+      - name: Ensure UV is in PATH
+        run: |
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Verify uv Availability
+        run: uv --version
 
       - name: Build application
-        run: |
-          uv build
-          echo "Build step executed successfully"
+        run: uv build
 
   test:
     needs: build
