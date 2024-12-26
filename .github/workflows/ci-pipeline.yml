@@ -26,7 +26,8 @@ jobs:
           echo '$HOME/.local/bin' >> $GITHUB_PATH
 
       - name: Debug Cache Key
-        run: echo "Cache Key: ${{ runner.os }}-uv-${{ hashFiles('**/uv.lock') }}"
+        run: |
+          echo "Cache Key: ${{ runner.os }}-uv-${{ hashFiles('**/uv.lock') }}"
         
       - name: Cache UV dependencies
         uses: actions/cache@v3
