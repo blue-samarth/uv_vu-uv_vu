@@ -53,7 +53,7 @@ jobs:
 
       - name: Build application
         run: |
-          # Add specific build commands here
+          uv build
           echo "Build step executed successfully"
 
   test:
