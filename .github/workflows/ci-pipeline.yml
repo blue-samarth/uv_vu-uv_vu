@@ -54,6 +54,12 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Restore UV binary
+        uses: actions/cache@v3
+        with:
+          path: $HOME/.local/bin
+          key: uv-${{ runner.os }}
+      
+      - name: Update PATH
         run: echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Build application
