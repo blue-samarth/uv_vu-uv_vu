@@ -53,6 +53,9 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
+      - name: Restore UV binary
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+
       - name: Build application
         run: |
           uv build
@@ -64,6 +67,9 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v2
+
+      - name: Restore UV binary
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Run tests
         run: |
