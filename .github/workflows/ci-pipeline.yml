@@ -25,8 +25,8 @@ jobs:
           curl -LsSf https://astral.sh/uv/install.sh | sh 
           echo '$HOME/.local/bin' >> $GITHUB_PATH
 
-          - name: Debug Cache Key
-          run: echo "Cache Key: ${{ runner.os }}-uv-${{ hashFiles('**/uv.lock') }}"
+      - name: Debug Cache Key
+        run: echo "Cache Key: ${{ runner.os }}-uv-${{ hashFiles('**/uv.lock') }}"
         
       - name: Cache UV dependencies
         uses: actions/cache@v3
