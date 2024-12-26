@@ -29,6 +29,13 @@ jobs:
         run: |
           echo "Cache Key: ${{ runner.os }}-uv-${{ hashFiles('**/uv.lock') }}"
         
+
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true' 
+        # Run only if cache wasn't found
+        run: |
+          uv pip install --generate-lock-file
+        
       - name: Cache UV dependencies
         uses: actions/cache@v3
         with:
