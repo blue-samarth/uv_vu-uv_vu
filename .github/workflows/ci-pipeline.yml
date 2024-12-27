@@ -1,100 +1,98 @@
-name: CI Pipeline for my project
+name: CI Pipeline
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   setup:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-
-      - name: Install Python 3.12
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.12
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-  
-      - name: Verify uv Installation
-        run: |
-          echo "Checking uv version:"
-          uv --version
+      - uses: actions/checkout@v4  
       
-
-      - name: Debug Cache Key
-        run: |
-          echo "Cache Key: ${{ runner.os }}-uv-${{ hashFiles('**/uv.lock') }}"
-        
-        
-      - name: Define a cache dependency glob
+      - name: Install Python 3.12
+        uses: actions/setup-python@v5  
+        with:
+          python-version: "3.12"
+      
+      - name: Install uv
         uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
-
-      - name: Use cached environment
-        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+      
+      - name: Cache uv dependencies
+        uses: actions/cache@v4  
+        with:
+          path: |
+            ~/.cache/uv
+            ~/.local/share/uv
+          key: ${{ runner.os }}-uv-${{ hashFiles('**/uv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-uv-
 
   lint:
+    needs: setup
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-    container:
-      image: ghcr.io/astral-sh/uv:python3.13-bookworm-slim
     steps:
       - uses: actions/checkout@v4
-      - name: Run ruff
-        run: uvx ruff check .
-
+      
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      
+      - name: Install and run ruff
+        run: |
+          uv pip install ruff
+          uv run ruff check . --output-format=github
 
   build:
     needs: setup
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-
-      - name: Set GitHub Path
-        run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
-        shell: bash
-        env:
-          GITHUB_ACTION_PATH: ${{ github.action_path }}
-
+      - uses: actions/checkout@v4
+      
       - name: Install uv
         uses: astral-sh/setup-uv@v5
-
-      - name: Set up Python
-        run: uv python install
-  
-      - name: Install dependencies
+      
+      - name: Set up Python and install dependencies
         run: |
-          uv sync --all-extras --dev
-
-      - name: Verify uv Availability
-        run: uv --version
-
+          uv python install
+          uv pip sync 
+      
       - name: Build application
         run: uv build
+      
+      - name: Upload build artifacts  
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: dist/
+          retention-days: 5
 
   test:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-
+      - uses: actions/checkout@v4
+      
       - name: Install uv
         uses: astral-sh/setup-uv@v5
-
-      - name: Run tests
+      
+      - name: Download build artifacts  
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: dist/
+      
+      - name: Install test dependencies and run tests
         run: |
-          uv run pytest -vvv -s tests/*.py
+          uv pip install pytest pytest-cov
+          uv run pytest -vvv -s tests/*.py --cov=./ --cov-report=xml
+      
+      - name: Upload coverage reports  
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: true
