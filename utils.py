@@ -1,4 +1,4 @@
-from typing import List , Dict , Union
+from typing import List 
 import yfinance as yf
 import json
 from libs.assertions import assert_not_found , assert_not_none
