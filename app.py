@@ -30,12 +30,13 @@ def index():
     """
     tickers : list = get_stocklist()
     if request.method == 'POST':
-        ticker_name : str = request.form.get('ticker').upper().strip()
+        ticker_name : str = ''
+        ticker_name = request.form.get('ticker').upper().strip()
         if not ticker_name: flash("Please enter a ticker" , "error")
         else:
             try:
                 data : Dict = get_stock_data(ticker_name)
-            except CustomError as e:
+            except CustomError:
                 flash(f"Stock : {ticker_name} not found" , "error")
                 return redirect(url_for('index'))
             if data:
