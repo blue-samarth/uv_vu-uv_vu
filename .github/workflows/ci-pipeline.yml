@@ -47,7 +47,7 @@ jobs:
       
       - name: Set up Python and install dependencies
         run: |
-          Run uv sync --all-extras --dev
+          uv sync --all-extras --dev
       
       - name: Build application
         run: uv build
