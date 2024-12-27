@@ -54,9 +54,8 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Ensure UV is in PATH
-        run: |
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
+      - name: Install uv again ???
+        uses: astral-sh/setup-uv@v5
 
       - name: Verify uv Availability
         run: uv --version
