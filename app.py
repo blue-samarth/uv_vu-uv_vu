@@ -32,7 +32,8 @@ def index():
     if request.method == 'POST':
         ticker_name : str = ''
         ticker_name = request.form.get('ticker').upper().strip()
-        if not ticker_name: flash("Please enter a ticker" , "error")
+        if not ticker_name: 
+            flash("Please enter a ticker" , "error")
         else:
             try:
                 data : Dict = get_stock_data(ticker_name)
