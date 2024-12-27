@@ -12,5 +12,4 @@ dependencies = [
 ]
 
 [tool.setuptools]
-packages = ["libs"]  # only include python packages
-include_package_data = true
+packages = ["libs"]  
