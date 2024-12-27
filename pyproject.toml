@@ -16,4 +16,4 @@ packages = ["libs"]  # only include python packages
 include_package_data = true
 
 [tool.setuptools.package-data]
-. = ['static/*', 'templates/*']
+"." = ['static/*', 'templates/*']
