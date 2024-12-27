@@ -54,9 +54,9 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Install uv again ???
-        uses: astral-sh/setup-uv@v5
-
+      - name: Use cached environment
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+        
       - name: Verify uv Availability
         run: uv --version
 
