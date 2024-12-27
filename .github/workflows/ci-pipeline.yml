@@ -21,10 +21,7 @@ jobs:
           python-version: 3.12
 
       - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-          echo "export PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
+        uses: astral-sh/setup-uv@v5
   
       - name: Verify uv Installation
         run: |
@@ -37,19 +34,18 @@ jobs:
           echo "Cache Key: ${{ runner.os }}-uv-${{ hashFiles('**/uv.lock') }}"
         
         
-      - name: Cache UV dependencies
-        uses: actions/cache@v3
+      - name: Define a cache dependency glob
+        uses: astral-sh/setup-uv@v5
         with:
-          path: |
-            ~/.cache/uv
-            ~/.cargo/bin/uv
-          key: ${{ runner.os }}-uv-${{ hashFiles('**/uv.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-uv-
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Set up Python
+        run: uv python install
 
       - name: Install dependencies
         run: |
-          uv sync
+          uv sync --all-extras --dev
 
   build:
     needs: setup
