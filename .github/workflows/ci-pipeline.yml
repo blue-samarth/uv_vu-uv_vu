@@ -49,6 +49,10 @@ jobs:
         run: |
           uv sync --all-extras --dev
       
+      - name: Adding other necessary files
+        run: |
+          cp -r static templates 
+
       - name: Build application
         run: uv build
       
