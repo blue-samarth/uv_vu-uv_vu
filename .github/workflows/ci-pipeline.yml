@@ -79,7 +79,7 @@ jobs:
         
 
   test:
-    needs: [build, lint]
+    needs: lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -95,7 +95,7 @@ jobs:
       
       - name: Install test dependencies and run tests
         run: |
-          uv run pytest -vvv -s tests/*.py --cov=./ --cov-report=xml
+          uv run pytest -vvv -s tests/*.py 
       
       - name: Upload coverage reports  
         uses: codecov/codecov-action@v4
