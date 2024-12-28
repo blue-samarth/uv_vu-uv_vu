@@ -79,7 +79,7 @@ jobs:
         
 
   test:
-    needs: build
+    needs: [build, lint]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -95,7 +95,6 @@ jobs:
       
       - name: Install test dependencies and run tests
         run: |
-          uv pip install pytest pytest-cov
           uv run pytest -vvv -s tests/*.py --cov=./ --cov-report=xml
       
       - name: Upload coverage reports  
